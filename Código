@@ -1,0 +1,122 @@
+# Carregar pacotes necessários
+install.packages(c("dplyr", "ggplot2", "nortest"))
+library(dplyr) 
+library(ggplot2) 
+library(nortest)
+
+# Objetivo da Análise: 
+# Avaliar se a idade influencia o comportamento de uso do cartão de crédito no nível de endividamento dos usuários.
+
+#X = Idade
+#Y = Dívidas Cartão
+
+# Carregar os Dados
+data("dados_banco")
+
+# Verificar tipo dos dados do dataset
+str(dados_banco)
+
+# Converte a coluna 'Idade' para o tipo numérico.
+dados_banco$Idade <- as.numeric(dados_banco$Idade)
+str(dados_banco)
+
+# Verificar a presença de valores NA no dataset
+na_dados_banco <- is.na(dados_banco)
+print(na_dados_banco)
+
+# Tratando NA, caso exista será excluído
+dados_limpo_na <- na.omit(na_dados_banco)
+print(dados_limpo_na)
+
+#Adiciona dados as variáveis 'x' e 'y'
+x <- dados_banco$Idade
+y <- dados_banco$Devedor_cartao
+
+# Cálculos de estatísticas descritivas
+
+# Média
+media_x <- mean(x)
+media_y <- mean(y)
+
+# Variância
+var_x <- var(x)
+var_y <- var(y)
+
+# Desvio padrão
+desvio_x <- sd(x)
+desvio_y <- sd(y)
+
+# Mediana
+mediana_x <- median(x)
+mediana_y <- median(y)
+
+# Imprime as estatísticas
+print(paste("Média Idade:", media_x))
+print(paste("Média Dívidas Cartão:", media_y))
+print(paste("Variância Idade:", var_x))
+print(paste("Variância Dívidas Cartão:", var_y))
+print(paste("Desvio Padrão Idade:", desvio_x))
+print(paste("Desvio Dívidas Cartão:", desvio_y))
+print(paste("Mediana Idade:", mediana_x))
+print(paste("Mediana Dívidas Cartão:", mediana_y))
+
+# Cria um dataframe com os dados de x
+data_x <- data.frame(valor = x, variavel = "Idade")
+
+# Cria um dataframe com os dados de y
+data_y <- data.frame(valor = y, variavel = "Dívidas Cartão")
+
+
+#Histograma Idade (x)
+ggplot(data_x, aes(x = valor)) +
+  geom_histogram(binwidth = 1, fill = "lightblue", color = "black", alpha = 0.7) +
+  labs(title = "Histograma das Idades x", x = "Idades", y = "Frequência") +
+  theme_minimal()
+
+
+#Histograma Dívidas Cartão (y)
+ggplot(data_y, aes(x = valor)) +
+  geom_histogram(binwidth = 500, fill = "lightblue", color = "black", alpha = 0.7) +
+  labs(title = "Histograma Dívidas Cartão y", x = "Dívida Cartão", y = "Frequência") +
+  theme_minimal()
+
+#Boxplot Idade (x)
+
+boxplot(x, main = "Boxplot Idade (x)", col = c("#FFDAB9", "#FFDAB9"),
+        xlab = " ", ylab = "Frequência")
+
+#Boxplot Dívidas Cartão (y)
+
+boxplot(y, main = "Boxplot Dívida Cartão (y)", col = c("#FFDAB9", "#FFDAB9"),
+        xlab = " ", ylab = "Frequência")
+
+#Coeficiente de correlação de 'X'
+
+correlacao <- cor(x, y)
+print(correlacao)
+
+# Executar e verificar o teste de Anderson-Darling de 'X'
+ad_resulto_x <- ad.test(x) 
+print(ad_resulto_x)
+
+# Executar e verificar o teste de Anderson-Darling de 'Y'
+ad_resultado_y <- ad.test(y) 
+print(ad_resultado_y)
+
+
+# Histograma e Gráfico de Densidade Idades combinados
+ggplot(data_x, aes(x = valor)) + 
+  geom_histogram(aes(y = ..density..), 
+                 position = "identity", binwidth = 1, fill = "lightblue", alpha = 10) + 
+  geom_density(fill = "#FFDAB9", alpha = 0.7) + 
+  labs(title = "Histograma e Gráfico de Densidade Idades", 
+       x = "Idades", y = "Densidade") + theme_minimal()
+
+
+# Histograma e Gráfico de Densidade Dívidas Cartão combinados
+ggplot(data_y, aes(x = valor)) + 
+  geom_histogram(aes(y = ..density..), 
+                 position = "identity", binwidth = 700, fill = "lightblue", alpha = 0.5) + 
+  geom_density(fill = "#FFDAB9", alpha = 0.5) + 
+  labs(title = "Histograma e Gráfico de Densidade Dívidas Cartão", 
+       x = "Dívidas Cartão", y = "Densidade") + theme_minimal()
